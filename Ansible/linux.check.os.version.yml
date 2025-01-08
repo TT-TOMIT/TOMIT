@@ -1,0 +1,11 @@
+---
+- name: Check linux version
+  hosts: linux
+  gather_facts: False
+  become: true
+  tasks:
+  - name: Display content of os-release
+    shell:  cat /etc/os-release | egrep '^NAME=|^VERSION='
+    register: display_output
+  - debug:
+      msg: "{{display_output.stdout}}"

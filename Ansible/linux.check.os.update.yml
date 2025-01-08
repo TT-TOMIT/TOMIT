@@ -1,0 +1,28 @@
+---
+- name: Check for updates linux all family
+  become: yes
+  hosts: linux
+  tasks:
+
+    - name: Check for updates on RHEL
+      yum:
+        list: updates
+      register: yum_updates
+      when: ansible_os_family == 'RedHat'
+
+    - name: Display RHEL hosts where updates are available
+      debug:
+        msg: "Aktualizacje są dostępne na hoscie {{ inventory_hostname }}"
+      when: ansible_os_family == 'RedHat' and yum_updates.results | length > 0
+
+    - name: Check for updates on Debian
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      register: apt_updates
+      when: ansible_os_family == 'Debian'
+
+    - name: Display Debian hosts where updates are available
+      debug:
+        msg: "Aktualizacje są dostępne na hoscie {{ inventory_hostname }}"
+      when: ansible_os_family == 'Debian'
